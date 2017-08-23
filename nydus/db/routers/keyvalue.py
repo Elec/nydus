@@ -89,4 +89,7 @@ class PartitionRouter(BaseRouter):
         """
         key = get_key(args, kwargs)
 
-        return [crc32(str(key)) % len(self.cluster)]
+        if six.PY3:
+            return [crc32(str(key).encode('utf-8')) % len(self.cluster)]
+        else:
+            return [crc32(str(key)) % len(self.cluster)]
