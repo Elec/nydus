@@ -10,7 +10,7 @@ from __future__ import absolute_import
 
 import pylibmc
 
-from itertools import izip
+from six.moves import zip
 from nydus.db.backends import BaseConnection, BasePipeline
 from nydus.db.promise import EventualCommand
 from nydus.utils import peek
@@ -197,7 +197,7 @@ def resolve_grouped_commands(grouped, connection):
                 for command in grouped_commands:
                     results[command] = result.get(command.get_args()[0])
             else:
-                for command, value in izip(grouped_commands, result):
+                for command, value in zip(grouped_commands, result):
                     results[command] = value
 
     return results
