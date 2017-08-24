@@ -13,27 +13,26 @@ from nydus.db.map import DistributedContextManager
 from nydus.db.routers import BaseRouter, routing_params
 from nydus.utils import apply_defaults
 
-import six
-from six.moves import range
-
 
 def iter_hosts(hosts):
     # this can either be a dictionary (with the key acting as the numeric
     # index) or it can be a sorted list.
     if isinstance(hosts, collections.Mapping):
-        return six.iteritems(hosts)
+        return hosts.items()
     return enumerate(hosts)
 
 
-def create_connection(Connection, num, host_settings, defaults):
+def create_connection(Connection, num, host_settings, defaults=None):
     # host_settings can be an iterable or a dictionary depending on the style
     # of connection (some connections share options and simply just need to
     # pass a single host, or a list of hosts)
+    if defaults is None:
+        defaults = {}
     if isinstance(host_settings, collections.Mapping):
-        return Connection(num, **apply_defaults(host_settings, defaults or {}))
+        return Connection(num, **apply_defaults(host_settings, defaults))
     elif isinstance(host_settings, collections.Iterable):
-        return Connection(num, *host_settings, **defaults or {})
-    return Connection(num, host_settings, **defaults or {})
+        return Connection(num, *host_settings, **defaults)
+    return Connection(num, host_settings, **defaults)
 
 
 class BaseCluster(object):
@@ -62,7 +61,7 @@ class BaseCluster(object):
         return CallProxy(self, name)
 
     def __iter__(self):
-        for name in six.iterkeys(self.hosts):
+        for name in self.hosts.keys():
             yield name
 
     def install_router(self, router):
@@ -97,7 +96,7 @@ class BaseCluster(object):
 
     def disconnect(self):
         """Disconnects all connections in cluster"""
-        for connection in six.itervalues(self.hosts):
+        for connection in self.hosts.values():
             connection.disconnect()
 
     def get_conn(self, *args, **kwargs):
@@ -158,11 +157,11 @@ class LazyConnectionHandler(dict):
     def reload(self):
         from nydus.db import create_cluster
 
-        for conn_alias, conn_settings in six.iteritems(self.conf_callback()):
+        for conn_alias, conn_settings in self.conf_callback().items():
             self[conn_alias] = create_cluster(conn_settings)
         self._is_ready = True
 
     def disconnect(self):
         """Disconnects all connections in cluster"""
-        for connection in six.itervalues(self):
+        for connection in self.values():
             connection.disconnect()

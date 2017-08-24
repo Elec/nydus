@@ -11,7 +11,6 @@ from binascii import crc32
 from nydus.contrib.ketama import Ketama
 from nydus.db.routers import BaseRouter, RoundRobinRouter, routing_params
 
-import six
 
 __all__ = ('ConsistentHashingRouter', 'PartitionRouter')
 
@@ -53,8 +52,8 @@ class ConsistentHashingRouter(RoundRobinRouter):
 
     @routing_params
     def _setup_router(self, args, kwargs, **fkwargs):
-        self._db_num_id_map = dict([(db_num, host.identifier) for db_num, host in six.iteritems(self.cluster.hosts)])
-        self._hash = Ketama(self._db_num_id_map.values())
+        self._db_num_id_map = dict([(db_num, host.identifier) for db_num, host in self.cluster.hosts.items()])
+        self._hash = Ketama(list(self._db_num_id_map.values()))
 
         return True
 
@@ -77,7 +76,7 @@ class ConsistentHashingRouter(RoundRobinRouter):
         if not found and len(self._down_connections) > 0:
             raise self.HostListExhausted()
 
-        return [i for i, h in six.iteritems(self.cluster.hosts)
+        return [i for i, h in self.cluster.hosts.items()
                 if h.identifier == found]
 
 
@@ -89,7 +88,4 @@ class PartitionRouter(BaseRouter):
         """
         key = get_key(args, kwargs)
 
-        if six.PY3:
-            return [crc32(str(key).encode('utf-8')) % len(self.cluster)]
-        else:
-            return [crc32(str(key)) % len(self.cluster)]
+        return [crc32(str(key).encode('utf-8')) % len(self.cluster)]

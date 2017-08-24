@@ -5,10 +5,6 @@ nydus.db.backends.redis
 :copyright: (c) 2011-2012 DISQUS.
 :license: Apache License 2.0, see LICENSE for more details.
 """
-
-from __future__ import absolute_import
-
-from six.moves import zip
 from redis import Redis as RedisClient, StrictRedis
 from redis import ConnectionError, InvalidResponse
 
@@ -28,7 +24,7 @@ class RedisPipeline(BasePipeline):
         getattr(self.pipe, name)(*args, **kwargs)
 
     def execute(self):
-        return dict(zip(self.pending, self.pipe.execute()))
+        return dict(list(zip(self.pending, self.pipe.execute())))
 
 
 class Redis(BaseConnection):

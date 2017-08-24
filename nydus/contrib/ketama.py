@@ -4,7 +4,7 @@
     Rewrited from the original source: http://www.audioscrobbler.net/development/ketama/
 
 """
-from __future__ import print_function
+
 
 __author__ = "Andrey Nikishaev"
 __email__ = "creotiv@gmail.com"
@@ -16,9 +16,6 @@ __all__ = ['Ketama']
 import hashlib
 import math
 from bisect import bisect
-
-import six
-from six.moves import range
 
 
 class Ketama(object):
@@ -95,7 +92,7 @@ class Ketama(object):
                 | b_key[fn(0)])
 
     def _md5_digest(self, key):
-        return list(six.iterbytes(hashlib.md5(key.encode('utf-8')).digest()))
+        return list(hashlib.md5(key.encode('utf-8')).digest())
 
     def remove_node(self, node):
         """

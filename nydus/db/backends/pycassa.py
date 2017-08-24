@@ -6,7 +6,7 @@ nydus.db.backends.pycassa
 :license: Apache License 2.0, see LICENSE for more details.
 """
 
-from __future__ import absolute_import
+
 
 import collections
 from nydus.db.base import BaseCluster

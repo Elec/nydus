@@ -12,8 +12,6 @@ from nydus.db.routers import BaseRouter, RoundRobinRouter
 from nydus.db.routers.keyvalue import ConsistentHashingRouter
 from nydus.testutils import BaseTest
 
-from six.moves import range
-
 
 def _get_func(func):
     return getattr(func, '__wraps__', func)

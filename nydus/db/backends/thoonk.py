@@ -6,7 +6,7 @@ nydus.db.backends.thoonk
 :license: Apache License 2.0, see LICENSE for more details.
 """
 
-from __future__ import absolute_import
+
 
 from thoonk import Pubsub
 

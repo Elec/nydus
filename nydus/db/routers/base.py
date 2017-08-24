@@ -13,9 +13,6 @@ import time
 from functools import wraps
 from itertools import cycle
 
-import six
-from six.moves import range
-
 
 def routing_params(func):
     @wraps(func)
@@ -182,7 +179,7 @@ class RoundRobinRouter(BaseRouter):
         """
         now = time.time()
 
-        for db_num, marked_down_at in self._down_connections.items():
+        for db_num, marked_down_at in list(self._down_connections.items()):
             if marked_down_at + self.retry_timeout <= now:
                 self.mark_connection_up(db_num)
 
@@ -191,7 +188,7 @@ class RoundRobinRouter(BaseRouter):
         Marks all connections which were previously listed as unavailable as being up.
         """
         self._get_db_attempts = 0
-        for db_num in self._down_connections.keys():
+        for db_num in list(self._down_connections.keys()):
             self.mark_connection_up(db_num)
 
     def mark_connection_down(self, db_num):
@@ -204,7 +201,7 @@ class RoundRobinRouter(BaseRouter):
 
     @routing_params
     def _setup_router(self, args, kwargs, **fkwargs):
-        self._hosts_cycler = cycle(self.cluster.hosts.keys())
+        self._hosts_cycler = cycle(list(self.cluster.hosts.keys()))
 
         return True
 
@@ -225,7 +222,7 @@ class RoundRobinRouter(BaseRouter):
         now = time.time()
 
         for i in range(len(self.cluster)):
-            db_num = six.next(self._hosts_cycler)
+            db_num = next(self._hosts_cycler)
 
             marked_down_at = self._down_connections.get(db_num, False)
 
